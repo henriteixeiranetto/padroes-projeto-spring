@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-tema="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Padrões de Projeto na Prática</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧩</text></svg>">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topo">
+  <div class="container">
+    <div class="topo-linha">
+      <div>
+        <span class="selo">Desafio DIO · Java + Spring Boot</span>
+        <h1>Padrões de Projeto na Prática</h1>
+        <p>
+          Doze padrões aplicados em uma API real de clientes e entregas. Cada aba abaixo exercita um
+          conjunto de padrões: use a tela, depois abra <strong>Bastidores</strong> para ver o que
+          aconteceu por dentro.
+        </p>
+      </div>
+      <button class="btn-tema" id="btnTema" type="button">Tema escuro</button>
+    </div>
+    <div class="links-topo">
+      <a href="/swagger-ui.html" target="_blank" rel="noopener">Swagger UI</a>
+      <a href="/api/padroes" target="_blank" rel="noopener">/api/padroes</a>
+      <a href="/h2-console" target="_blank" rel="noopener">Console H2</a>
+      <a href="/actuator/health" target="_blank" rel="noopener">Health</a>
+      <a href="https://github.com/digitalinnovationone/lab-padroes-projeto-spring" target="_blank" rel="noopener">Laboratório original</a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <nav class="abas" role="tablist">
+    <button role="tab" data-painel="clientes" aria-selected="true">Clientes</button>
+    <button role="tab" data-painel="frete" aria-selected="false">Simulador de frete</button>
+    <button role="tab" data-painel="cep" aria-selected="false">Consulta de CEP</button>
+    <button role="tab" data-painel="padroes" aria-selected="false">Padrões aplicados</button>
+    <button role="tab" data-painel="bastidores" aria-selected="false">Bastidores</button>
+  </nav>
+
+  <!-- ================= CLIENTES ================= -->
+  <section class="painel ativo" id="painel-clientes">
+    <div class="cartao">
+      <h2 id="tituloFormulario">Novo cliente</h2>
+      <p class="dica">
+        Uma única chamada ao <code>ClienteFacade</code> dispara a cadeia de validação, a consulta de
+        CEP (com cache e modo offline) e a publicação do evento que gera as notificações.
+      </p>
+      <form id="formCliente" autocomplete="off">
+        <input type="hidden" id="clienteId">
+        <div class="campos">
+          <div>
+            <label for="nome">Nome</label>
+            <input id="nome" name="nome" placeholder="Maria Silva" required>
+          </div>
+          <div>
+            <label for="email">E-mail</label>
+            <input id="email" name="email" placeholder="maria@empresa.com.br" required>
+          </div>
+          <div>
+            <label for="telefone">Telefone (opcional)</label>
+            <input id="telefone" name="telefone" placeholder="11987654321">
+          </div>
+          <div>
+            <label for="cep">CEP</label>
+            <input id="cep" name="cep" placeholder="01001-000" maxlength="9" required>
+          </div>
+        </div>
+        <p class="dica" id="previaEndereco" style="margin-top:12px"></p>
+        <div class="acoes">
+          <button class="primario" type="submit" id="btnSalvar">Cadastrar cliente</button>
+          <button class="secundario" type="button" id="btnCancelar" hidden>Cancelar edição</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="cartao">
+      <h2>Clientes cadastrados</h2>
+      <p class="dica">Filtre por nome: a consulta vai para o repositório do Spring Data.</p>
+      <div class="campos" style="max-width:420px">
+        <div>
+          <label for="filtro">Filtrar por nome</label>
+          <input id="filtro" placeholder="digite parte do nome">
+        </div>
+      </div>
+      <div class="rolagem" style="margin-top:16px">
+        <table>
+          <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Contato</th>
+            <th>Endereço</th>
+            <th>Origem</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody id="tabelaClientes"></tbody>
+        </table>
+      </div>
+      <div class="vazio" id="clientesVazio" hidden>Nenhum cliente encontrado.</div>
+    </div>
+  </section>
+
+  <!-- ================= FRETE ================= -->
+  <section class="painel" id="painel-frete">
+    <div class="cartao">
+      <h2>Simulador de frete</h2>
+      <p class="dica">
+        Sem escolher a modalidade, a <code>FreteStrategyFactory</code> roda <strong>todas</strong> as
+        estratégias e devolve o comparativo. Cada cartão mostra qual classe fez o cálculo.
+      </p>
+      <form id="formFrete">
+        <div class="campos">
+          <div>
+            <label for="freteCep">CEP de destino</label>
+            <input id="freteCep" value="90010-150" maxlength="9" required>
+          </div>
+          <div>
+            <label for="fretePeso">Peso (kg)</label>
+            <input id="fretePeso" type="number" step="0.1" min="0.1" max="100" value="2.5" required>
+          </div>
+          <div>
+            <label for="freteModalidade">Modalidade</label>
+            <select id="freteModalidade">
+              <option value="">Comparar todas</option>
+            </select>
+          </div>
+        </div>
+        <div class="acoes">
+          <button class="primario" type="submit">Simular</button>
+        </div>
+      </form>
+      <div class="opcoes-frete" id="resultadoFrete"></div>
+    </div>
+  </section>
+
+  <!-- ================= CEP ================= -->
+  <section class="painel" id="painel-cep">
+    <div class="cartao">
+      <h2>Consulta de CEP</h2>
+      <p class="dica">
+        Consulte o mesmo CEP duas vezes e compare a etiqueta de origem: <strong>VIACEP</strong> na
+        primeira, <strong>CACHE</strong> na segunda. Sem internet, a resposta vem como
+        <strong>OFFLINE</strong>, que é o Decorator decidindo por baixo dos panos.
+      </p>
+      <form id="formCep">
+        <div class="campos" style="max-width:420px">
+          <div>
+            <label for="cepConsulta">CEP</label>
+            <input id="cepConsulta" value="01001-000" maxlength="9" required>
+          </div>
+        </div>
+        <div class="acoes">
+          <button class="primario" type="submit">Consultar</button>
+        </div>
+      </form>
+      <div id="resultadoCep"></div>
+    </div>
+  </section>
+
+  <!-- ================= PADRÕES ================= -->
+  <section class="painel" id="painel-padroes">
+    <div class="cartao">
+      <h2>Padrões aplicados</h2>
+      <p class="dica">
+        Conteúdo carregado de <code>GET /api/padroes</code>. A própria aplicação documenta onde cada
+        padrão está e como vê-lo funcionando.
+      </p>
+      <div class="padroes" id="listaPadroes"></div>
+    </div>
+
+    <div class="cartao">
+      <h2>Cadeia de validação montada</h2>
+      <p class="dica">
+        Ordem real dos elos no contexto do Spring (<code>GET /api/padroes/chain</code>).
+      </p>
+      <ol id="listaCadeia"></ol>
+    </div>
+  </section>
+
+  <!-- ================= BASTIDORES ================= -->
+  <section class="painel" id="painel-bastidores">
+    <div class="cartao">
+      <h2>O que o cache do Decorator já fez</h2>
+      <p class="dica" id="decoratorImpl"></p>
+      <div class="metricas" id="metricasDecorator"></div>
+    </div>
+
+    <div class="grade-2">
+      <div class="cartao">
+        <h2>Linha do tempo (Observer)</h2>
+        <p class="dica">Eventos publicados pela facade e captados pelos observadores.</p>
+        <ul class="lista-eventos" id="listaEventos"></ul>
+        <div class="vazio" id="eventosVazio">Cadastre um cliente para ver os eventos aparecerem aqui.</div>
+      </div>
+
+      <div class="cartao">
+        <h2>Caixa de saída (Template Method)</h2>
+        <p class="dica">Mesmo roteiro de envio, corpos diferentes por canal.</p>
+        <ul class="lista-eventos" id="listaNotificacoes"></ul>
+        <div class="vazio" id="notificacoesVazio">Nenhuma notificação gerada ainda.</div>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <h2>Prova do Singleton</h2>
+      <p class="dica" id="singletonExplicacao"></p>
+      <div class="metricas" id="metricasSingleton"></div>
+      <div class="acoes">
+        <button class="secundario" type="button" id="btnAtualizarBastidores">Atualizar</button>
+        <button class="perigo" type="button" id="btnLimparHistorico">Limpar eventos, notificações e cache</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="rodape">
+    Projeto de estudo do desafio <strong>Explorando Padrões de Projetos na Prática com Java</strong>,
+    evolução do laboratório <code>lab-padroes-projeto-spring</code> da DIO.
+  </footer>
+</div>
+
+<div id="avisos"></div>
+
+<script src="app.js" defer></script>
+</body>
+</html>
