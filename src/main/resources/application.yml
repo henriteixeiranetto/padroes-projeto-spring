@@ -1,0 +1,68 @@
+spring:
+  application:
+    name: padroes-projeto-spring
+
+  datasource:
+    url: jdbc:h2:mem:padroesdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  error:
+    include-message: always
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+    display-request-duration: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# ----------------------------------------------------------------------------
+# Configuracoes da aplicacao (todas com valor padrao, nada precisa ser alterado)
+# ----------------------------------------------------------------------------
+app:
+  via-cep:
+    url: https://viacep.com.br/ws
+    connect-timeout: 3s
+    read-timeout: 5s
+    # Quando o ViaCEP esta fora do ar (ou a maquina esta sem internet),
+    # o Decorator usa a estrategia offline em vez de derrubar a requisicao.
+    fallback-offline: true
+  seed:
+    # Popula o banco com clientes de exemplo na inicializacao.
+    enabled: true
+
+logging:
+  charset:
+    console: UTF-8
+    file: UTF-8
+  level:
+    com.dio.padroes: INFO
