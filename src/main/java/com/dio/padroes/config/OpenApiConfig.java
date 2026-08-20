@@ -3,7 +3,6 @@ package com.dio.padroes.config;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,8 +29,7 @@ public class OpenApiConfig {
                                 Comece por POST /api/clientes e depois consulte /api/padroes/eventos para ver
                                 os observadores reagindo ao cadastro.
                                 """)
-                        .contact(new Contact().name("Desafio DIO - Padrões de Projeto"))
-                        .license(new License().name("MIT")))
+                        .contact(new Contact().name("Desafio DIO - Padrões de Projeto")))
                 .servers(List.of(new Server().url("/").description("Servidor local")));
     }
 }
