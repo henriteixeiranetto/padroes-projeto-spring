@@ -127,7 +127,3 @@ fechada de propósito, o que ainda exercita o caminho de contingência do Decora
 - [ ] perfil de produção com PostgreSQL e Flyway
 - [ ] paginação na listagem de clientes
 - [ ] circuit breaker (Resilience4j) junto do Decorator
-
-## Licença
-
-MIT.
